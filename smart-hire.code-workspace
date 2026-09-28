@@ -1,0 +1,29 @@
+{
+  "folders": [
+    { "name": "smart-hire (root)", "path": "." },
+    { "name": "iam-service", "path": "services/iam-service" },
+    { "name": "candidate-service", "path": "services/candidate-service" },
+    { "name": "job-service", "path": "services/job-service" },
+    { "name": "application-service", "path": "services/application-service" },
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.rulers": [100],
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/.pytest_cache": true,
+      "**/.mypy_cache": true,
+    },
+    "python.analysis.autoImportCompletions": true,
+    "python.testing.pytestEnabled": true,
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "charliermarsh.ruff",
+      "ms-azuretools.vscode-docker",
+    ],
+  },
+}
