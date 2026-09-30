@@ -8,7 +8,7 @@ The business problems are manual hiring operations, scattered and inconsistent h
 
 This is also a hands-on engineering assignment: understanding and explaining architecture, patterns, failure behavior, and tradeoffs is part of success.
 
-The workspace contains four Markdown source documents in `docs/concept/`, and no application implementation, dependency manifest, test suite, or local infrastructure configuration. Everything below describes intended behavior, not completed functionality. Update this status as implementation progresses. Do not invent setup or test commands before tooling exists.
+The workspace contains four Markdown source documents in `docs/concept/` and a FastAPI foundation in `services/iam-service/`, adapted from the supplied SmartHire-main application-service structure. IAM includes a versioned health endpoint, validated settings, async SQLAlchemy infrastructure, logging/error handling, uv dependency metadata and lockfile, tests, and local Docker/PostgreSQL configuration. IAM authentication, domain models, and migrations are not implemented. The job, candidate, and application services remain empty entry-point/README placeholders. See `services/iam-service/README.md` for actual setup and validation commands.
 
 ## Source documents
 
@@ -156,6 +156,17 @@ These are proposed weekly modules, not calendar deadlines or evidence of complet
 - Keep PRD traceability, README instructions, architecture notes, and this context file current when behavior or decisions change.
 
 ## Open decisions to resolve when relevant
+
+The user-approved design direction is recorded in `docs/db-schema.md`: four separate
+service databases; global users with organization memberships and independent candidate
+capability; event-free IAM; preserved job/resume revisions; local immutable application
+pipeline snapshots with relational current state and history; business-key application
+uniqueness without an application idempotency-key column; versioned scoring runs.
+Notification and reporting workers are proposed modules in application-service, with
+IAM reporting data obtained through explicit reconciliation rather than IAM events.
+`docs/schema/` contains proposed DDL and role/RLS templates, not deployed tables or
+migrations. Product defaults and unresolved policies are explicitly marked in the design.
+The repository directory remains `job-service`; the user calls it `jobs-service`.
 
 The source documents do not yet settle:
 
