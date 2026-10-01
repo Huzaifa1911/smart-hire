@@ -1,43 +1,55 @@
 # SmartHire
 
-Backend for **SmartHire** — a multi-tenant workforce-orchestration and recruitment platform.
+Backend for TalentSphere Inc.'s workforce orchestration and recruitment platform.
+The project requirements cover core recruitment workflows (Part A) and later
+AI-assisted retrieval and assistants (Part B).
 
-This repository is **Part A**: the core recruitment and workflow-orchestration system — job and
-candidate management, job-publishing and application workflows, event-driven background processing,
-analytics, and observability. The GenAI layer (Part B) is out of scope here.
+## Current repository
 
-Recruiters (tenant staff) post jobs and run hiring pipelines; candidates (global) register, apply,
-and track status. It's a set of event-driven microservices, each owning its own database.
-
-## Repository structure
-
-```
+```text
 smart-hire/
 ├── services/
-│   ├── iam-service/           # tenants, users (recruiter/candidate), auth (JWT + JWKS)
-│   ├── job-service/           # jobs + publishing workflow
-│   ├── candidate-service/     # candidate profiles, resumes, skills
-│   └── application-service/   # applications, stages, interviews, scoring
+│   ├── iam-service/           # runnable FastAPI foundation and local PostgreSQL config
+│   ├── job-service/           # empty main.py and README placeholders
+│   ├── candidate-service/     # empty main.py and README placeholders
+│   └── application-service/   # empty main.py and README placeholders
 ├── docs/
-│   ├── architecture.md        # system design
-│   └── db-schema.md           # data model (ERD)
-├── Makefile                   # repo-wide targets (pre-commit hooks)
-├── .pre-commit-config.yaml    # shared lint/format hooks (scoped per stack)
+│   ├── concept/              # four preserved source requirements documents
+│   └── iam-service-structure.md
+├── AGENTS.md
 └── smart-hire.code-workspace
 ```
 
-Each service is a FastAPI application with its own `Makefile` (`make setup`, `run`, `test`,
-`migrate`), `Dockerfile`, and `docker-compose.yml`.
+IAM currently provides configuration, async database infrastructure, logging, error
+handling, and a versioned health endpoint. Authentication and recruitment business
+APIs, workflows, events, analytics, and AI capabilities are not implemented yet.
 
-`notification-service` and `kpi-service` are part of the design (see `docs/architecture.md`) but are
-not yet scaffolded.
+## IAM foundation
 
-## Documentation
+See [IAM setup, API, and development commands](services/iam-service/README.md) and
+[the structure replication plan](docs/iam-service-structure.md).
 
-- **Architecture** — [`docs/architecture.md`](docs/architecture.md)
-- **Database schema** — [`docs/db-schema.md`](docs/db-schema.md)
+The proposed [complete per-service database design](docs/db-schema.md) covers IAM,
+jobs, candidates, and applications, with [PostgreSQL DDL](docs/schema/) and access-policy
+templates. It is design documentation; domain tables and migrations are not implemented.
 
-## Stack
+```mermaid
+flowchart LR
+    HTTP[HTTP client] --> API[IAM FastAPI app]
+    API --> Health[Versioned health endpoint]
+    Health --> DB[(IAM PostgreSQL)]
+```
 
-Python · FastAPI · PostgreSQL · MongoDB · Redis · Celery + RabbitMQ · Kafka · Temporal ·
-OpenTelemetry (Jaeger / Prometheus / Grafana / Loki) · Docker Compose.
+The scaffold uses Python 3.12, FastAPI, Pydantic settings, async SQLAlchemy with asyncpg,
+PostgreSQL, uv, ruff, pytest, and Docker Compose. Future request handlers will follow
+endpoint → service → repository → model. Those extension layers currently have no
+business implementation. Database transactions for IAM business operations remain
+undefined until those operations are built.
+
+## Requirements and delivery
+
+The source documents live in [docs/concept](docs/concept/). They specify PostgreSQL,
+a NoSQL database, Redis, Celery/RabbitMQ, Kafka/Schema Registry, Temporal, and
+observability tooling for the wider platform, plus the Part B AI stack. This scaffold
+does not integrate those additional systems. Vendor choices and product policies
+remain open where the sources do not settle them.

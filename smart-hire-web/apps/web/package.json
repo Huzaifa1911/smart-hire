@@ -1,0 +1,12 @@
+{
+  "name": "@smart-hire-web/web",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@smart-hire/core": "workspace:*",
+    "@smart-hire/types": "workspace:*",
+    "@smart-hire/ui": "workspace:*",
+    "@smart-hire/utils": "workspace:*",
+    "@smart-hire/components": "workspace:*"
+  }
+}

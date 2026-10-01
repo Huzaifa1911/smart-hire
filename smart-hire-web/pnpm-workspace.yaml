@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+autoInstallPeers: true
+allowBuilds:
+  '@parcel/watcher': true
+  nx: true
+  unrs-resolver: false
+  '@swc/core': false
+  esbuild: false
