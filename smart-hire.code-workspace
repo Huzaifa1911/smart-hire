@@ -5,6 +5,7 @@
     { "name": "candidate-service", "path": "services/candidate-service" },
     { "name": "job-service", "path": "services/job-service" },
     { "name": "application-service", "path": "services/application-service" },
+    { "name": "smart-hire-web", "path": "smart-hire-web" },
   ],
   "settings": {
     "editor.formatOnSave": true,
