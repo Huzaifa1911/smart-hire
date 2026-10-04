@@ -11,11 +11,11 @@ smart-hire/
 ├── services/
 │   ├── iam-service/           # runnable FastAPI foundation and local PostgreSQL config
 │   ├── job-service/           # empty main.py and README placeholders
-│   ├── candidate-service/     # empty main.py and README placeholders
+│   ├── candidate-service/     # FastAPI foundation and local PostgreSQL config
 │   └── application-service/   # empty main.py and README placeholders
 ├── docs/
 │   ├── concept/              # four preserved source requirements documents
-│   └── iam-service-structure.md
+│   └── db-schema.md           # per-service database design
 ├── AGENTS.md
 └── smart-hire.code-workspace
 ```
@@ -26,12 +26,19 @@ APIs, workflows, events, analytics, and AI capabilities are not implemented yet.
 
 ## IAM foundation
 
-See [IAM setup, API, and development commands](services/iam-service/README.md) and
-[the structure replication plan](docs/iam-service-structure.md).
+See [IAM setup, API, and development commands](services/iam-service/README.md).
+
+## Candidate foundation
+
+See [candidate setup, API, and development commands](services/candidate-service/README.md).
+Candidate-service provides the same settings, database-session, logging/middleware, and
+health foundation. Its API runs locally on port 8001, with PostgreSQL on host port 5433.
+Candidate models, migrations, profiles, resumes, and ownership enforcement remain future work.
 
 The proposed [complete per-service database design](docs/db-schema.md) covers IAM,
-jobs, candidates, and applications, with [PostgreSQL DDL](docs/schema/) and access-policy
-templates. It is design documentation; domain tables and migrations are not implemented.
+jobs, candidates, and applications. IAM models, repositories, and an initial Alembic
+migration are written; authentication and service logic remain unimplemented. Other
+services' domain schemas remain design documentation.
 
 ```mermaid
 flowchart LR

@@ -1,0 +1,33 @@
+services:
+  candidate-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: candidate
+      POSTGRES_PASSWORD: candidate
+      POSTGRES_DB: candidate
+    ports:
+      - "5433:5432"
+    volumes:
+      - candidate_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U candidate -d candidate"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  candidate-service:
+    build: .
+    environment:
+      CANDIDATE_DB_HOST: candidate-postgres
+      CANDIDATE_DB_PORT: 5432
+      CANDIDATE_DB_USER: candidate
+      CANDIDATE_DB_PASSWORD: candidate
+      CANDIDATE_DB_NAME: candidate
+    ports:
+      - "8001:8000"
+    depends_on:
+      candidate-postgres:
+        condition: service_healthy
+
+volumes:
+  candidate_pg_data:
