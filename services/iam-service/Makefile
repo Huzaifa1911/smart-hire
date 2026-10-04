@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help setup install format lint test run db-up db-down clean
+.PHONY: help setup install format lint test run db-up db-down migrate clean
 COMPOSE ?= docker compose
 
 help:
@@ -12,6 +12,7 @@ help:
 	@echo "  make test      - run tests without a database"
 	@echo "  make run       - run the service on :8000 with reload"
 	@echo "  make db-up     - start local Postgres on :5432"
+	@echo "  make migrate   - apply IAM Alembic migrations"
 	@echo "  make db-down   - stop the local Compose stack"
 
 setup:
@@ -38,6 +39,9 @@ run:
 
 db-up:
 	@$(COMPOSE) up -d iam-postgres
+
+migrate:
+	@uv run --locked alembic upgrade head
 
 db-down:
 	@$(COMPOSE) down

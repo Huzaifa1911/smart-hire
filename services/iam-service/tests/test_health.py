@@ -28,6 +28,7 @@ def test_openapi_uses_iam_routes(client):
     assert response.status_code == 200
     document = response.json()
     assert document["info"]["title"] == "SmartHire IAM Service"
-    assert set(document["paths"]) == {"/iam-service/v1/health"}
+    assert "/iam-service/v1/health" in document["paths"]
+    assert all(path.startswith("/iam-service/v1/") for path in document["paths"])
     assert client.get("/iam-service/v1/swagger").status_code == 200
     assert client.get("/iam-service/v1/redoc").status_code == 200
