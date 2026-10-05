@@ -9,10 +9,19 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./globals.css": "./src/lib/styles/globals.css"
   },
   "dependencies": {
     "@smart-hire/types": "workspace:*",
-    "@smart-hire/utils": "workspace:*"
+    "@smart-hire/utils": "workspace:*",
+    "sonner": "^2.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.0",
+    "class-variance-authority": "^0.7.1",
+    "radix-ui": "^1.0.0",
+    "lucide-react": "^0.500.0",
+    "next-themes": "^0.4.6",
+    "react-hook-form": "^7.0.0"
   }
 }

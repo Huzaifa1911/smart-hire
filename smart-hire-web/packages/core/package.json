@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@smart-hire/types": "workspace:*",
-    "@smart-hire/utils": "workspace:*"
+    "@smart-hire/utils": "workspace:*",
+    "@smart-hire/api": "workspace:*",
+    "@tanstack/react-query": "^5.0.0",
+    "zustand": "^5.0.0"
   }
 }

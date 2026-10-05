@@ -1,11 +1,3 @@
-# utils
+# @smart-hire/utils
 
-This library was generated with [Nx](https://nx.dev).
-
-## Building
-
-Run `nx build utils` to build the library.
-
-## Running unit tests
-
-Run `nx test utils` to execute the unit tests via [Jest](https://jestjs.io).
+See the [frontend architecture and setup](../../README.md) for ownership, import boundaries, and validation commands.

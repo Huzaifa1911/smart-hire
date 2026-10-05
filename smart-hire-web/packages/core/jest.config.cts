@@ -1,4 +1,5 @@
 module.exports = {
+  testEnvironment: 'jsdom',
   displayName: 'core',
   preset: '../../jest.preset.js',
   transform: {

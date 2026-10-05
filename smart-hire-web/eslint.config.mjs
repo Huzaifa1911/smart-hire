@@ -1,4 +1,6 @@
 import nx from '@nx/eslint-plugin';
+import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
   ...nx.configs['flat/base'],
@@ -8,7 +10,24 @@ export default [
     ignores: ['**/dist', '**/out-tsc', '**/vite.config.*.timestamp*'],
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.tsx', '**/*.jsx'],
+    plugins: { 'jsx-a11y': jsxA11y },
+    rules: {
+      ...jsxA11y.configs.recommended.rules,
+      'jsx-a11y/heading-has-content': ['error', { components: ['CardTitle'] }],
+    },
+  },
+  {
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.mts',
+      '**/*.cts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.mjs',
+      '**/*.cjs',
+    ],
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
@@ -24,6 +43,7 @@ export default [
                 'scope:ui',
                 'scope:utils',
                 'scope:components',
+                'scope:api',
               ],
             },
             {
@@ -34,11 +54,16 @@ export default [
                 'scope:ui',
                 'scope:utils',
                 'scope:components',
+                'scope:api',
               ],
             },
             {
               sourceTag: 'scope:core',
-              onlyDependOnLibsWithTags: ['scope:types', 'scope:utils'],
+              onlyDependOnLibsWithTags: [
+                'scope:types',
+                'scope:utils',
+                'scope:api',
+              ],
             },
             {
               sourceTag: 'scope:components',
@@ -56,6 +81,10 @@ export default [
             {
               sourceTag: 'scope:utils',
               onlyDependOnLibsWithTags: ['scope:types'],
+            },
+            {
+              sourceTag: 'scope:api',
+              onlyDependOnLibsWithTags: ['scope:types', 'scope:utils'],
             },
             {
               sourceTag: 'scope:types',
@@ -77,7 +106,38 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
-    rules: {},
+    plugins: { import: importPlugin },
+    rules: {
+      'import/newline-after-import': [
+        'error',
+        { count: 1, exactCount: true, considerComments: true },
+      ],
+      'import/order': [
+        'error',
+        {
+          groups: [
+            ['builtin', 'external'],
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          pathGroups: [{ pattern: '@smart-hire/**', group: 'internal' }],
+          pathGroupsExcludedImportTypes: ['builtin'],
+          'newlines-between': 'always',
+        },
+      ],
+      'padding-line-between-statements': [
+        'error',
+        {
+          blankLine: 'always',
+          prev: '*',
+          next: ['export', 'class', 'function'],
+        },
+        { blankLine: 'any', prev: 'export', next: 'export' },
+        { blankLine: 'always', prev: '*', next: 'return' },
+        { blankLine: 'always', prev: ['const', 'let'], next: '*' },
+        { blankLine: 'any', prev: ['const', 'let'], next: ['const', 'let'] },
+      ],
+      'lines-between-class-members': ['error', 'always'],
+    },
   },
 ];

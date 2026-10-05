@@ -8,9 +8,8 @@ export default [
       '@nx/dependency-checks': [
         'error',
         {
-          ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
-          // Prelinked for shared types before utilities start consuming them.
           ignoredDependencies: ['@smart-hire/types'],
+          ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
         },
       ],
     },

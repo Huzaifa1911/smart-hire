@@ -11,7 +11,8 @@
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo"
+    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
+    "lib": ["es2022", "dom"]
   },
   "exclude": [
     "out-tsc",
@@ -32,6 +33,9 @@
   ],
   "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
   "references": [
+    {
+      "path": "../api/tsconfig.lib.json"
+    },
     {
       "path": "../utils/tsconfig.lib.json"
     },

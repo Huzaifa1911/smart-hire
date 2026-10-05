@@ -7,6 +7,8 @@
     "@smart-hire/types": "workspace:*",
     "@smart-hire/ui": "workspace:*",
     "@smart-hire/utils": "workspace:*",
-    "@smart-hire/components": "workspace:*"
+    "@smart-hire/components": "workspace:*",
+    "@smart-hire/api": "workspace:*",
+    "sonner": "^2.0.0"
   }
 }

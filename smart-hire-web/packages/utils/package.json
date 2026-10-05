@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "@smart-hire/types": "workspace:*"
+    "@smart-hire/types": "workspace:*",
+    "libphonenumber-js": "^1.0.0"
   }
 }

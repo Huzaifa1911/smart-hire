@@ -1,14 +1,22 @@
 import { StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import * as ReactDOM from 'react-dom/client';
-// import App from './app/app';
+import { createRoot } from 'react-dom/client';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement,
-);
+import { ThemeProvider } from '@smart-hire/ui';
 
-root.render(
+import App from './app/app';
+import './styles.css';
+
+const root = document.getElementById('root');
+
+if (!root) throw new Error('Root element is missing');
+
+createRoot(root).render(
   <StrictMode>
-    <BrowserRouter>{/* <App /> */}</BrowserRouter>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );
