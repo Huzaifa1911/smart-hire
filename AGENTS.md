@@ -163,6 +163,12 @@ statement records agreed product rules; the ADRs propose architecture and servic
 boundaries. Keep this work focused on responsibilities,
 operations, data and reasons for grouping; defer implementation mechanisms.
 
+Read the study in this order: problem statement, ADR 0001, then ADR 0002.
+Use short sentences, active voice, consistent terms and one topic per paragraph.
+Apply ASD-STE100 writing principles without claiming formal compliance.
+Keep named operations in the problem statement; ADR 0002 assigns capabilities to
+services instead of repeating operation lists.
+
 The study includes common identity and multi-tenancy. One account can have candidate
 access and recruiter/owner memberships in multiple organizations. Candidate information
 is personal; recruitment records are organization-scoped. Recruiter membership must
@@ -198,6 +204,10 @@ ADR 0002 maps service dependencies and the information/work exchanged. Job and
 Hiring coordinate the revision used for admission. Keep timing, dependency-failure
 behavior and separate boundary-review tables out of this map; they belong to later
 workflow/reliability design.
+ADR 0002 includes the domain model and reasons supporting the proposed groupings;
+there are no separate domain-model or boundary-validation documents.
+Notification's independent deployment remains provisional. Publication handoff and
+immediate-revocation enforcement still need design; runtime isolation is unverified.
 The ADRs remain Proposed. Existing IAM endpoints must not determine fresh boundaries.
 Earlier database and expiry-only authorization proposals do not reflect all current
 rules; no implementation or migration was requested.

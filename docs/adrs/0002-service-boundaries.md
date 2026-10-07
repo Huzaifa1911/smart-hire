@@ -4,50 +4,81 @@ Status: Proposed
 
 ## Purpose
 
-Group operations and data by business responsibility. Keep related decisions together and separate capabilities that benefit from independent scaling or isolation.
+Answers: **How should SmartHire's operations and data be grouped into services, and why?**
 
-## Proposed Boundaries
+The [problem statement](../architecture/problem_statement.md) defines the operations and business rules. [ADR 0001](0001-architecture-style.md) explains the architecture style.
 
-| Service | Operations | Data It Controls | Reason for the Boundary |
+## 1. Identify the Business Concepts
+
+This domain model describes the business concepts and their relationships.
+
+| Concept | Meaning and Relationships |
+| --- | --- |
+| Account | A person's identity. An account can have candidate access and memberships in several organizations. |
+| Organization | A tenant with memberships, jobs and private hiring records. |
+| Membership | An account's owner or recruiter role within an organization. |
+| Invitation | An offer to join an organization. Acceptance creates a membership. |
+| Candidate Profile / Resume | Personal information and uploaded resumes used in applications. |
+| Job | An organization's opportunity, with content revisions and hiring periods. |
+| Job Revision | A preserved version of job content, requirements and stage definitions. Applications reference the submitted revision. |
+| Hiring Period | A job's recruitment window, application limit, accepted count and acceptance status. |
+| Application | A candidate's submission to a job revision during a hiring period. It has progress, notes and a final decision. |
+| Stage History | Records each application's stage changes, actor and time. |
+| Evaluation | A result based on submitted candidate information and a job revision. Hiring links the result to the application. |
+
+## 2. Group Responsibilities into Services
+
+Each service owns the operations of its listed capabilities. Capability names refer to the problem statement.
+
+| Proposed Service | Capabilities | Data It Controls | Why Group This Work? |
 | --- | --- | --- | --- |
-| Identity & Organization Access | `register_candidate`, `register_recruiter`, `login`, `logout`, `create_organization`, `view_organization`, `select_organization`, `update_organization`, `list_memberships`, `update_membership`, `invite_recruiter`, `revoke_invitation`, `accept_invitation`, `remove_recruiter`, `transfer_ownership`, `leave_organization` | Accounts, credentials, sessions, candidate access, organizations, memberships, roles and invitations. | One identity serves candidates and recruiters. Membership and ownership rules belong together. |
-| Candidate | `create_candidate_profile`, `upload_resume`, `parse_resume` | Personal profiles, skills, resumes and parsing results. | Candidate information has its own lifecycle. Profile changes are separate from account and membership changes. |
-| Job | `post_job`, `update_job`, `upload_job_description`, `define_required_skills`, `manage_hiring_stages`, `publish_job`, `extract_job_keywords`, `map_job_skills`, `structure_job_description`, `mark_job_ready`, `search_jobs`, `view_job` | Job descriptions, revisions, requirements, skills, stage definitions and publishing progress. | These define the advertised opportunity. Content processing and browsing can scale separately from application handling. |
-| Hiring | `set_hiring_duration`, `set_application_limit`, `reopen_job`, `close_job`, `apply_to_job`, `track_application`, `move_application_stage`, `record_interview_progress`, `record_recruiter_notes`, `record_hiring_decision` | Hiring periods, limits, counts, accepting/closed status, the revision used for admission, applications, stage history, interview progress, notes, decisions and links to evaluation results. | Capacity and the decision to accept an application belong together. Hiring also controls its progression and decisions. |
-| Notification Service | `send_application_notification`, `send_invitation_notification` | Message templates, delivery requests, recipients, attempts and delivery outcomes. | Application receipts and organization invitations share delivery responsibilities; provider failures should be separate from hiring and membership changes. |
-| Analytics Service | `update_analytics`, `report_hiring_metrics` | Derived hiring metrics and reporting data, with organization/platform scope. | Reporting queries and aggregation should have capacity separate from operational hiring. |
-| AI Service | `score_candidate`, `semantic_search`, `recommend_candidates`, `summarize_resume`, `explain_candidate_ranking`, `enhance_job_description`, `answer_job_questions`, `assess_role_fit`, `provide_application_guidance` | Evaluation results, derived search data, assistant interactions, recommendations, summaries, explanations and usage counts. | Skill matching, ranking, retrieval and assistance share recruitment intelligence. Their computation can evolve and scale separately from application handling. |
+| Identity & Organization Access | Identity & Authentication; Organizations & Access. | Accounts, credentials, sessions, candidate access, organizations, memberships, roles and invitations. | Membership, invitations and ownership enforce related access rules. |
+| Candidate | Candidate Profiles & Resumes. | Profiles, skills, resumes and extracted information. | Personal profiles have a lifecycle separate from organization membership. |
+| Job | Job Management & Publishing. | Job content, revisions, requirements, skills, stage definitions and processing status. | Content processing and job discovery need capacity separate from application handling. |
+| Hiring | Applications & Hiring Progress. | Periods, limits, counts, acceptance status, accepted revision, applications, submitted information, progress, history, notes, decisions and evaluation links. | Acceptance, counting and closure enforce one capacity rule. Progress and decisions belong with application history. |
+| Notification Service | Notifications. | Messages, templates, delivery requests, recipients, attempts and results. | Invitations and application receipts share delivery work. |
+| Analytics Service | Hiring Reporting. | Derived report data and organization/platform scope. | Report queries and calculations need resources separate from operational hiring. |
+| AI Service | Candidate Evaluation; Semantic Discovery; Recruitment Assistance. | Evaluations, search data, assistant interactions, recommendations, summaries, explanations and usage counts. | These tasks share recruitment intelligence and need resources separate from application handling. |
 
-## Important Distinctions
+## 3. Define Ownership at Each Boundary
 
-- **Identity versus Candidate:** Identity controls who a person is and their access. Candidate controls their profile and resume. One person can recruit for one organization and apply to another.
-- **Job versus Hiring:** Job controls content and revision readiness. Hiring controls accepting/closed status, capacity, the revision used for admission and applications. Job and Hiring coordinate publication. A ready revision does not by itself mean the job is accepting applications.
-- **Stage definitions versus stage progress:** Job defines available stages. Hiring records each application's actual stage and history.
-- **Resume parsing versus evaluation:** Candidate controls parsed resume information. AI computes evaluation results; Hiring associates the relevant result with the application and job revision. Scoring does not determine application acceptance.
-- **Notification intent versus delivery:** Hiring decides when an application receipt is needed; Identity decides when an invitation is needed. Notification Service delivers both and records the outcome. Invitation validity remains Identity's responsibility.
-- **Source data versus derived results:** Analytics owns reporting data; AI owns evaluation and assistant results. Both use authorized source information without owning jobs, profiles or hiring decisions.
+- Job controls revision readiness. Hiring controls application acceptance. A ready revision does not open a closed hiring period.
+- Hiring preserves submitted candidate information and stage definitions. Later source changes must not change earlier applications.
+- Candidate extracts resume information. AI computes evaluations. Hiring links results to applications. Evaluation does not decide acceptance or final hiring outcomes.
+- Identity and Hiring decide when messages are needed. Notification controls delivery. Identity retains invitation validity.
+- Analytics and AI own derived results. They do not own source jobs, profiles or hiring decisions.
 
-## Interaction Map
+## 4. Map Service Interactions
 
-These are information and work dependencies; they do not specify communication mechanisms.
+The arrows show information or work exchanged. They do not select a communication mechanism.
 
-| Operation | Services Involved | Information or Work Exchanged |
+In this table, **Identity** means Identity & Organization Access.
+
+| Operation | Exchange | Information or Work |
 | --- | --- | --- |
-| Create a profile or upload a resume | Identity → Candidate | Verified identity and candidate access. |
-| Protected organization action | Identity → Job, Hiring, Analytics or AI | Current organization membership and role; each service checks its own resource permissions. |
-| Publish or update a job | Job → Hiring | Published revision and stage definitions; agreement on the revision used for new applications. |
+| Create a profile or upload a resume | Identity → Candidate | Verified account identity and candidate access. |
+| Perform a protected organization action | Identity → Job, Hiring, Analytics or AI | Current membership and role. Each receiving service checks permission for its own records. |
+| Publish or update a job | Job → Hiring | Ready revision and stage definitions; the revision to use for new applications. |
 | Apply to a job | Job, Candidate → Hiring | Published revision and submitted candidate/resume information. |
-| Show job availability | Hiring → Job | Accepting/closed status. |
-| Score an application | Hiring, Job, Candidate → AI → Hiring | Evaluation request, submitted job revision, parsed resume and evaluation result. |
-| Send an application receipt | Hiring → Notification | Application receipt delivery request. |
-| Invite a recruiter | Identity → Notification | Invitation delivery request; Identity retains invitation validity and membership rules. |
-| Update and read reports | Identity, Candidate, Job, Hiring, AI → Analytics | Recruitment facts and assistant usage for reporting. |
-| Search or use an assistant | Job, Candidate, Hiring → AI | Authorized recruitment information for retrieval and guidance. |
+| Show job availability | Hiring → Job | Acceptance status. |
+| Score an application | Hiring, Job, Candidate → AI → Hiring | Evaluation request, submitted revision, extracted resume information and result. |
+| Send an application receipt | Hiring → Notification | Receipt delivery request. |
+| Invite a recruiter | Identity → Notification | Invitation delivery request. Identity controls invitation validity. |
+| Update reports | Identity, Candidate, Job, Hiring, AI → Analytics | Hiring facts and assistant usage. |
+| Search or use an assistant | Job, Candidate, Hiring → AI | Permitted recruitment information for search and guidance. |
 
-## Scope and Tradeoffs
+## 5. Record Costs and Remaining Decisions
 
-These are proposed service groupings, not one service per actor or tenant. Evaluation and delivery run in the background; their failures must not undo accepted applications or recorded invitations. AI includes ordinary skill matching as well as AI-assisted functions; scoring need not use an LLM.
+Services add deployment work for one owner. They separate major capabilities, but do not isolate every internal operation.
 
-The proposal adds deployment work for one owner. It separates major capabilities but does not isolate every operation inside a service. Job browsing/publishing and AI retrieval/assistance may need finer separation if their workloads justify it.
+Notification's separate deployment remains provisional. Separate workers may provide sufficient isolation.
 
-Business rules are recorded in the [problem statement](../architecture/problem_statement.md). The map defines required collaboration; delivery guarantees, access-check ordering and publication handoff still need detailed design. No database, endpoint or messaging choice is made here. Capacity and failure isolation have not been verified.
+Evaluation and delivery run in the background. Their failures must not undo accepted applications or recorded invitations. AI scoring can use basic skill matching without a large language model (LLM).
+
+Further design must define:
+
+- The publication handoff, without resetting capacity or reopening a closed hiring period.
+- Immediate revocation across protected operations.
+- Reliable work delivery.
+
+Database, endpoint and messaging choices remain open. Test capacity, failure behavior and isolation across capabilities and tenants during implementation.

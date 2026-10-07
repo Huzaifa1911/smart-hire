@@ -2,40 +2,49 @@
 
 Status: Proposed
 
-## Options
+## Purpose
 
-| Architecture | Structure |
+Answers: **Which architecture style fits SmartHire's requirements, and why?**
+
+## 1. Compare the Options
+
+| Style | Structure | Main Tradeoff |
+| --- | --- | --- |
+| Monolith | One application contains the core capabilities. | Simple deployment; capabilities share application resources. |
+| Modular monolith | One application contains separate business modules. | Clear code boundaries; modules still share application resources. |
+| Microservices | Separate services own business responsibilities and data. | Separate resources; more deployments and communication. |
+
+Every option can use API replicas and background workers. Replicas are additional instances of the same application.
+
+## 2. Apply the Requirements
+
+| Requirement or Constraint | Effect on the Choice |
 | --- | --- |
-| Monolith | Core capabilities run as one application. Internal structure may be simple or layered. |
-| Modular monolith | One application organized into business modules with clear interfaces. |
-| Microservices | Independently deployable services, each responsible for its own business data. |
+| One owner operates the system. | Fewer deployments favor a monolith or modular monolith. |
+| Related updates must stay consistent. | Keep responsibilities that enforce the same rule together. Local changes need less coordination. |
+| Capabilities must handle different loads. | Separate services permit separate resource allocation. |
+| One overloaded capability must not disrupt others. | Separate runtimes can improve isolation. Code modules alone do not provide it. |
+| One overloaded tenant must not disrupt others. | Every style needs controls within each shared capability. Service separation alone does not isolate tenants. |
+| Long tasks must not block users. | Every style can use background workers. This requirement alone does not select microservices. |
 
-All three can run multiple API instances and separate background workers.
+Shared identity and access controls apply to every option. Independent releases have less weight with one owner.
 
-## Principles Behind the Choice
+Richardson calls forces that favor separation **dark energy**. Forces that favor grouping are **dark matter**.
 
-| Principle | Effect on the Choice |
-| --- | --- |
-| Simple deployment and operation | One owner benefits from fewer deployments. This favors a monolith or modular monolith. |
-| Clear business responsibilities | Explicit capability boundaries favor a modular monolith or services organized by business responsibility. |
-| Consistent updates | Keep related changes together. Local transactions are simpler than coordinating changes across services. |
-| Efficient collaboration | Keep frequently interacting responsibilities together to reduce network calls and coordinated releases. |
-| Independent scaling | Separate services allow capacity to grow for one capability without replicating the whole application. |
-| Overload and failure isolation | Separate runtimes and resource budgets can protect unrelated capabilities. Module boundaries alone provide limited runtime isolation. |
-| Independent releases | Services can change separately when their contracts allow it. This has less weight with one owner. |
-| Common identity and tenant isolation | Every option needs shared account rules and organization access controls. Microservices do not automatically isolate tenants. |
-| Background processing | Every option can use workers for scoring, notifications and reporting. Background work alone does not require another service. |
+For SmartHire, separate scaling and failure isolation favor separation. Consistent updates, fewer interactions and simple operation favor grouping.
 
-Independent scaling, isolation and releases are **dark-energy forces** that encourage separation. Consistent updates and simple interactions are **dark-matter forces** that encourage grouping.
+## 3. Proposed Choice
 
-## Proposed Direction
+Use a small number of services with clear business responsibilities. Use separate workers for background tasks.
 
-Use **a small number of services organized around business responsibilities**, with separate background workers where needed.
+- Keep responsibilities that enforce the same business rule together.
+- Separate capabilities when separate resources provide clear value.
+- Share account and organization access rules across actors.
 
-SmartHire's scaling and overload-isolation needs favor services. A single owner and related hiring updates favor keeping the service count small.
+## 4. Costs and Limits
 
-- Group operations and data that must change together.
-- Separate capabilities where independent capacity or failure isolation provides clear value.
-- Keep account and membership management common to candidates and recruiters.
+Services add deployment and communication work. Dependencies and shared infrastructure can still spread failures.
 
-The cost is more deployment and communication work. Shared infrastructure and service dependencies still need protection. A modular monolith remains an alternative if it meets the same isolation needs more simply. Capacity and availability remain to be validated.
+A modular monolith remains an alternative if it can meet the isolation requirements more simply. Capacity and availability need testing.
+
+Next: [ADR 0002 — Service Boundaries](0002-service-boundaries.md).
