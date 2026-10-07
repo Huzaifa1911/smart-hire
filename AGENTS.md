@@ -38,7 +38,7 @@ The assignment specifies a backend. No frontend framework, UI design, or separat
 ### Job and candidate management
 
 - Support job and candidate management, candidate registration and profiles, job requirements, descriptions, and hiring stages.
-- Enforce duplicate-application rules, job-specific eligibility checks, and application limits.
+- The source requires duplicate-application rules, job-specific eligibility checks, and application limits. The fresh user-defined scope retains duplicates/limits but explicitly excludes job-specific eligibility restrictions.
 - Keep updates consistent across the authoritative hiring state and its dashboard and analytics representations.
 
 ### Job publishing workflow
@@ -157,7 +157,54 @@ These are proposed weekly modules, not calendar deadlines or evidence of complet
 
 ## Open decisions to resolve when relevant
 
-The user-approved design direction is recorded in `docs/db-schema.md`: four separate
+The current architecture study is documented in `docs/architecture/problem_statement.md`
+and `docs/adrs/0001-architecture-style.md` / `0002-service-boundaries.md`. The problem
+statement records agreed product rules; the ADRs propose architecture and service
+boundaries. Keep this work focused on responsibilities,
+operations, data and reasons for grouping; defer implementation mechanisms.
+
+The study includes common identity and multi-tenancy. One account can have candidate
+access and recruiter/owner memberships in multiple organizations. Candidate information
+is personal; recruitment records are organization-scoped. Recruiter membership must
+not expose applications made to another organization.
+
+Key agreed rules:
+
+- Recruiter removal revokes access immediately. Scheduled actions check current access;
+  removed access defers execution without advancing the workflow.
+- Owners may transfer ownership to another organization member. The last owner must
+  appoint another before leaving; organizations cannot be deleted for now.
+- Applications bind to preserved job revisions and are unique per candidate/job revision.
+  Previous published content remains available while an update processes; new
+  applications use the new revision once ready.
+- Capacity belongs to the hiring period, independent of revisions. Close at the limit
+  or period end. Limit changes affect acceptance without resetting the count;
+  reopening starts a new period with zero count and preserves earlier applications.
+- Applications cannot be withdrawn. No job-specific eligibility restrictions apply;
+  scoring follows acceptance.
+- Authorized recruiters/owners may skip stages or move backward; record stage changes
+  with actor and time. Final decisions cannot be corrected.
+- Dashboard auto-refresh is every 30 minutes. File/retention questions and detailed
+  scheduling/assessments are outside the current architecture discussion.
+
+Proposed services are Identity & Organization Access, Candidate, Job, Hiring,
+Notification, Analytics and AI services. AI computes evaluations; Hiring owns
+applications and their association with evaluation results. Notification delivers
+application receipts and organization invitations; Hiring and Identity retain the
+business rules that trigger them. AI, semantic retrieval and assistant usage are in
+the current design scope. Hiring groups acceptance with periods, limits, counts and
+accepting/closed status; Job retains content, revisions and publishing readiness.
+ADR 0002 maps service dependencies and the information/work exchanged. Job and
+Hiring coordinate the revision used for admission. Keep timing, dependency-failure
+behavior and separate boundary-review tables out of this map; they belong to later
+workflow/reliability design.
+The ADRs remain Proposed. Existing IAM endpoints must not determine fresh boundaries.
+Earlier database and expiry-only authorization proposals do not reflect all current
+rules; no implementation or migration was requested.
+
+### Earlier Database Proposal
+
+`docs/db-schema.md` records an earlier design: four separate
 service databases; global users with organization memberships and independent candidate
 capability; event-free IAM; preserved job/resume revisions; local immutable application
 pipeline snapshots with relational current state and history; business-key application
@@ -168,7 +215,11 @@ IAM reporting data obtained through explicit reconciliation rather than IAM even
 migrations. Product defaults and unresolved policies are explicitly marked in the design.
 The repository directory remains `job-service`; the user calls it `jobs-service`.
 
-The source documents do not yet settle:
+### Further Design Topics
+
+The source documents leave the following topics unspecified. The agreed product rules
+above settle some of them for the current scope; this list must not reopen those rules
+or block the service-boundary discussion:
 
 - Service/deployment boundaries, repository structure, API contracts, and detailed data schemas.
 - Authentication, recruiter/candidate authorization, organization or tenant isolation, and administrative roles.
@@ -181,6 +232,6 @@ The source documents do not yet settle:
 
 Resolve ordinary implementation choices within the authorized task and document the rationale. Seek clarification when an unresolved choice materially changes product behavior or scope. Do not turn this list into invented requirements or assume every item blocks initial foundation work.
 
-Authentication design: access tokens have a 15-minute lifetime and include organization memberships/roles and candidate capability. Organization requests select context with `X-Tenant-ID`, validated against signed memberships; `/auth/context` has been removed. Membership changes may remain effective in existing tokens until expiry. Refresh tokens must load current authorization state; refresh contracts and implementation remain pending.
+Earlier authentication design: access tokens have a 15-minute lifetime and include organization memberships/roles and candidate capability. Organization requests select context with `X-Tenant-ID`, validated against signed memberships; `/auth/context` has been removed. Its proposal to retain membership access until token expiry is superseded by the immediate-revocation rule in the fresh design. Enforcement remains to be designed and implemented. Refresh tokens must load current authorization state; refresh contracts and implementation remain pending.
 
-Frontend architecture scaffold follows the ros-frontend-core-main reference: web uses src/app with config/services/routing/layouts/pages and injects platform adapters into AppCoreProvider. Core has context/provider/query-client/hooks modules. API has APIClient facade, Axios RequestHandler, empty IamApiClient, auth lifecycle/store/refresh extension points, and transport utils. Types are grouped under api/common/services; interfaces/types use type-only exports, and fixed value sets use exported string enums; utils has common/phone/schemas extension points. Components and feature pages remain empty; UI follows the reference ui-web structure with per-component folders/barrels, shared utils/styles and components.json. It implements Button/Card/Input/Label, form and phone wrappers, icons, themed toast infrastructure, AlertActions and cn; OTP input is excluded. Tailwind 4 theme styles are compiled by the web Vite plugin. Phone helpers live in utils and require international country calling codes. No endpoint methods are implemented. Web storage/navigation/alert adapters are implemented with localStorage, named React Router navigation and Sonner/native confirmation. Auth initialization is a no-op and route guards pass through. Frontend ESLint enforces separated library/workspace/local import groups and code spacing; workspace boundaries cover TS/JS module extensions as well. Provider context uses individual dependencies to preserve stable values. Reference architecture is adopted but reference business behavior/contracts are not copied. See smart-hire-web/README.md for connections and validation commands.
+Frontend architecture scaffold follows the ros-frontend-core-main reference: web uses src/app with config/services/routing/layouts/pages and injects platform adapters into AppCoreProvider. Core has context/provider/query-client/hooks modules. API has APIClient facade, Axios RequestHandler, empty IamApiClient, auth lifecycle/store/refresh extension points, and transport utils. Types are grouped under api/common/services; interfaces/types use type-only exports, and fixed value sets use exported string enums; utils has common/phone/schemas extension points. Components and feature pages now implement the account/workspace screen UI; UI follows the reference ui-web structure with per-component folders/barrels, shared utils/styles and components.json. It implements Button/Card/Input/Label, form and phone wrappers, icons, themed toast infrastructure, AlertActions and cn; OTP input is excluded. Tailwind 4 theme styles are compiled by the web Vite plugin. Phone helpers live in utils and require international country calling codes. No endpoint methods are implemented. Web storage/navigation/alert adapters are implemented with localStorage, named React Router navigation and Sonner/native confirmation. Auth initialization is a no-op and route guards remain unwired. Account/workspace screens are UI only: props supply display data and callbacks, web pages compose features and wire navigation, React Hook Form and shared fields handle form UI, and utils owns field validation functions. No mock accounts, memberships, seeded invitation data, simulated authentication, account-flow provider/hooks or success toasts remain. All screen routes are directly accessible. Backend actions and form submissions remain disabled until callbacks are supplied. Candidate workspace switching is a presentation prop and hidden by default. Frontend ESLint enforces separated library/workspace/local import groups and code spacing; workspace boundaries cover TS/JS module extensions as well. Provider context uses individual dependencies to preserve stable values. Reference architecture is adopted but reference business behavior/contracts are not copied. See smart-hire-web/README.md for connections and validation commands.

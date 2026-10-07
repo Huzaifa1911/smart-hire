@@ -15,6 +15,7 @@
     "@smart-hire/types": "workspace:*",
     "@smart-hire/ui": "workspace:*",
     "@smart-hire/utils": "workspace:*",
-    "@smart-hire/core": "workspace:*"
+    "@smart-hire/core": "workspace:*",
+    "react-hook-form": "^7.0.0"
   }
 }

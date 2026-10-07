@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-/** Passthrough placeholders: these do not enforce authentication. */
+/** Reserved for authentication integration; no authorization behavior yet. */
 export function ProtectedRoute() {
   return <Outlet />;
 }

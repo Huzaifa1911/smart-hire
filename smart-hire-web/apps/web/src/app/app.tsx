@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { AppCoreProvider } from '@smart-hire/core';
 import { Toaster } from '@smart-hire/ui';
@@ -22,7 +22,6 @@ export function App() {
     () => ({ experience: 'web', application: 'smart-hire' }),
     [],
   );
-  const { Home } = ROUTES;
 
   return (
     <AppCoreProvider
@@ -34,7 +33,10 @@ export function App() {
       alertService={alertService}
     >
       <Routes>
-        <Route path={Home.path} element={<Home.Component />} />
+        {Object.values(ROUTES).map(({ path, Component }) => (
+          <Route key={path} path={path} element={<Component />} />
+        ))}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster />
     </AppCoreProvider>

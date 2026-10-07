@@ -207,6 +207,9 @@ importers:
       '@smart-hire/utils':
         specifier: workspace:*
         version: link:../utils
+      react-hook-form:
+        specifier: ^7.0.0
+        version: 7.89.0(@types/react@19.3.0)(react@19.3.0)
 
   packages/core:
     dependencies:

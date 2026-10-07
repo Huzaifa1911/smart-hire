@@ -1,6 +1,8 @@
-/** Apps augment this interface with their own named routes. */
+import type { OnboardingRoutes } from '../common/onboarding.types.js';
+
+/** Shared flow routes; apps can augment this with additional named routes. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
-export interface RootParamList {}
+export interface RootParamList extends OnboardingRoutes {}
 
 export type RouteArgs<Name extends keyof RootParamList> =
   undefined extends RootParamList[Name]

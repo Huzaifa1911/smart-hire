@@ -5,14 +5,14 @@ import { Button } from '@smart-hire/ui';
 
 import { AuthLayout } from '../../layouts/auth-layout';
 
-export function RegisterPage() {
+export function OrganizationPage() {
   const { navigationService } = useAppCoreContext();
 
   return (
     <AuthLayout
-      eyebrow="Candidate signup"
-      title="Create your account."
-      description="One account for your profile and job applications."
+      eyebrow="Organization signup"
+      title="Start your hiring workspace."
+      description="Create your account and your organization together. You will be the workspace owner."
       back={() => navigationService.navigate('Home')}
       footer={
         <Button
@@ -23,7 +23,7 @@ export function RegisterPage() {
         </Button>
       }
     >
-      <SignupForm mode={SignupMode.Candidate} />
+      <SignupForm mode={SignupMode.Organization} />
     </AuthLayout>
   );
 }
