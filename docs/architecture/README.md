@@ -15,4 +15,6 @@ Business rules live in the problem statement. ADRs explain decisions. Workflows 
 The architecture and ADRs are proposed. The repository contains service foundations, not the complete target system.
 Database schemas, API contracts and detailed sequence diagrams will be defined as each workflow is implemented.
 
+[ADR 0003: JWT authentication and authorization](../adrs/0003-authentication-and-sessions.md) defines the selected token approach, role checks and membership revocation.
+
 The [concept documents](../concept/) are preserved source requirements.

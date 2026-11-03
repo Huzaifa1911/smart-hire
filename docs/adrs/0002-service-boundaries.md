@@ -33,7 +33,7 @@ Notification delivers messages; Identity and Hiring retain the rules that trigge
 
 ## Service Interactions
 
-Protected services need verified identity and current access information. The enforcement mechanism is not selected.
+Protected services need verified identity and current access information. [ADR 0003](0003-authentication-and-sessions.md) defines live Identity checks; ordering against removal remains open.
 These exchanges describe information ownership, not endpoints or transport choices.
 
 | From → To | Information or Work |

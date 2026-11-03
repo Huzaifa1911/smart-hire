@@ -43,7 +43,7 @@ The [shared workflow rules](workflows/README.md#shared-execution-rules) define d
 
 ## Remaining Design Work
 
-1. Define current-access enforcement, including removal during an in-progress operation. A gateway or request-entry check alone is insufficient.
+1. Define removal ordering for in-progress operations. [ADR 0003](../adrs/0003-authentication-and-sessions.md) defines live Identity checks; a request-entry check alone is insufficient.
 2. Validate the [publication handoff](workflows/job-content.md#failure-and-recovery), including interrupted revision switches.
 3. Design Job and Hiring schemas and transaction boundaries. Define exact contracts and sequence diagrams as each workflow is implemented.
 

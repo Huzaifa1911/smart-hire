@@ -29,8 +29,9 @@ APIs, workflows, events and analytics are not implemented yet.
 
 See [IAM setup, API, and development commands](services/iam-service/README.md).
 
-IAM models, repositories and an initial Alembic migration are written. Authentication
-and service logic remain unimplemented.
+IAM uses the same baseline structure as Candidate. Its API runs on port 8000, with
+PostgreSQL on host port 5432. Domain models, migrations, repositories, authentication
+and business endpoints are not implemented.
 
 ```text
 HTTP client → IAM health endpoint → PostgreSQL connectivity check

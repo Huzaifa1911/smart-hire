@@ -14,7 +14,7 @@ flowchart TD
     C --> D[Identity: confirm removal]
 ```
 
-The [access rules](../problem_statement.md#access-and-privacy) define what remains available to the account. The enforcement mechanism is still open.
+The [access rules](../problem_statement.md#access-and-privacy) define what remains available to the account. [ADR 0003](../../adrs/0003-authentication-and-sessions.md) defines live Identity checks; enforcement for in-progress operations remains open.
 
 ## Failure and Recovery
 

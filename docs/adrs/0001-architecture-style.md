@@ -16,20 +16,16 @@ All three can use API replicas and background workers. Background work alone doe
 
 ## Decision and Reasons
 
-Propose a small number of business services, with separate API and worker runtimes.
+Use a small number of business services, with separate API and worker processes.
 
-| Force | Effect |
-| --- | --- |
-| Different workloads and overload containment | Favor separate runtimes and resource allocation. |
-| Related changes must remain consistent | Favor keeping one business rule within one service. |
-| One owner operates the system | Favor fewer deployments and fewer cross-service interactions. |
-
-Richardson calls separation forces **dark energy** and grouping forces **dark matter**. Here, isolation favors separation; consistency and operating cost favor grouping.
-Tenant isolation still requires controls within each shared service.
+- Separate services allow independent resource allocation and scaling for workloads such as job browsing, application submission and reporting.
+- Separate worker processes keep background processing from consuming API capacity.
+- Keep related business rules and data within one service to maintain consistency and reduce calls between services.
+- Keep the number of services small to limit deployment and maintenance work for a single owner.
 
 ## Consequences
 
-Services add operational work and network dependencies. Isolation must be tested, including failures in shared infrastructure.
-A modular monolith remains an alternative if it meets the isolation requirements more simply.
+Services add deployments and network dependencies. Separate services do not guarantee isolation.
+Test overload and failures in services and shared infrastructure. Apply resource limits within each service so one organization cannot exhaust capacity needed by others.
 
 Next: [Service boundaries](0002-service-boundaries.md).
