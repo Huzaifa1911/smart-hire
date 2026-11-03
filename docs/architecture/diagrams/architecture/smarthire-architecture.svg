@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3100" height="1720" viewBox="0 0 3100 1720" role="img" aria-labelledby="title desc">
+  <title id="title">SmartHire request, processing and data architecture</title>
+  <desc id="desc">Web requests and responses through gateway and service APIs; owned storage; Temporal publication and scoring; RabbitMQ and Celery tasks; service exchanges and Kafka reporting.</desc>
+  <defs>
+    <marker id="end-request" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#7950c8" />
+    </marker>
+    <marker id="start-request" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M8,0 L0,4 L8,8 Z" fill="#7950c8" />
+    </marker>
+    <marker id="end-work" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#277ea5" />
+    </marker>
+    <marker id="start-work" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M8,0 L0,4 L8,8 Z" fill="#277ea5" />
+    </marker>
+    <marker id="end-data" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#9398a6" />
+    </marker>
+    <marker id="start-data" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M8,0 L0,4 L8,8 Z" fill="#9398a6" />
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="#fbfcfe" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <path id="web-entry" d="M 280,820 L 360,820" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="entry-bus" d="M 640,820 L 700,820 L 700,260" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="entry-bus-lower" d="M 700,820 L 700,1410" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="identity-read-write" d="M 1500.0,240 L 2700.0,240" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="route-identity" d="M 700,260 L 1180.0,260" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="candidate-read-write" d="M 1500.0,470 L 2700.0,470" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="route-candidate" d="M 700,490 L 1180.0,490" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="job-read-write" d="M 1500.0,700 L 2700.0,700" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="route-job" d="M 700,720 L 1180.0,720" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="hiring-read-write" d="M 1500.0,930 L 2700.0,930" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="route-hiring" d="M 700,950 L 1180.0,950" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="notification-read-write" d="M 1500.0,1160 L 2700.0,1160" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="analytics-read-write" d="M 1500.0,1390 L 2700.0,1390" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="route-analytics" d="M 700,1410 L 1180.0,1410" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="candidate-enqueue" d="M 1500.0,510 L 1590.0,510 L 1590.0,598 L 1740.0,598" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="candidate-execute" d="M 2060.0,598 L 2210.0,598" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="candidate-save" d="M 2550.0,598 L 2875.0,598 L 2875.0,530" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="notification-enqueue" d="M 1500.0,1200 L 1590.0,1200 L 1590.0,1288 L 1740.0,1288" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="notification-execute" d="M 2060.0,1288 L 2210.0,1288" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="notification-save" d="M 2550.0,1288 L 2875.0,1288 L 2875.0,1220" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="job-start" d="M 1500.0,740 L 1590.0,740 L 1590.0,828 L 1740.0,828" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="publication-tasks" d="M 2060.0,828 L 2170.0,828" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" marker-start="url(#start-work)" />
+    <path id="publication-job-data" d="M 2590.0,813 L 2875.0,813 L 2875.0,760" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="publication-hiring-data" d="M 2590.0,846 L 2640.0,846 L 2640.0,950 L 2700.0,950" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="scoring-start" d="M 1500.0,970 L 1590.0,970 L 1590.0,1058 L 1740.0,1058" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="scoring-tasks" d="M 2060.0,1058 L 2170.0,1058" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" marker-start="url(#start-work)" />
+    <path id="scoring-save" d="M 2590.0,1058 L 2875.0,1058 L 2875.0,990" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <path id="hiring-candidate" d="M 1275.0,910 L 1275.0,880 L 1145.0,880 L 1145.0,555 L 1275.0,555 L 1275.0,530" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="hiring-job" d="M 1410.0,910 L 1410.0,875 L 1525.0,875 L 1525.0,785 L 1410.0,785 L 1410.0,760" fill="none" stroke="#7950c8" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-request)" marker-start="url(#start-request)" />
+    <path id="notification-incoming" d="M 1340.0,1118 L 1340.0,1140" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="events-in" d="M 1680.0,1518 L 1740.0,1518" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="events-consume" d="M 2060.0,1518 L 2210.0,1518" fill="none" stroke="#277ea5" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#end-work)" />
+    <path id="reports-save" d="M 2550.0,1518 L 2875.0,1518 L 2875.0,1450" fill="none" stroke="#9398a6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6 6" marker-end="url(#end-data)" marker-start="url(#start-data)" />
+    <rect id="node-web" x="40" y="770" width="240" height="100" rx="10" fill="#f5f6fa" stroke="#7e8496" stroke-width="2" />
+    <text x="160.0" y="828.5" text-anchor="middle" font-size="25" fill="#27344c" font-weight="600">Web application</text>
+    <rect id="node-gateway" x="360" y="770" width="280" height="100" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="500.0" y="811.5" text-anchor="middle" font-size="25" fill="#27344c" font-weight="600">Gateway / ingress</text>
+    <text x="500.0" y="845.5" text-anchor="middle" font-size="25" fill="#27344c" font-weight="400">Route requests</text>
+    <rect id="node-identity" x="1180.0" y="220" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="268.5" text-anchor="middle" font-size="25" fill="#27344c" font-weight="600">Identity</text>
+    <rect id="node-identity-data" x="2700.0" y="220" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="251.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Identity PostgreSQL</text>
+    <text x="2875.0" y="282.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Accounts + memberships</text>
+    <rect id="node-candidate" x="1180.0" y="450" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="482.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="600">Candidate</text>
+    <text x="1340.0" y="511.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="400">Kafka publisher: Profile facts</text>
+    <rect id="node-candidate-data" x="2700.0" y="450" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="481.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Candidate PostgreSQL</text>
+    <text x="2875.0" y="512.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Profiles + parsing results</text>
+    <rect id="node-job" x="1180.0" y="680" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="712.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="600">Job</text>
+    <text x="1340.0" y="741.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="400">Kafka publisher: Publication facts</text>
+    <rect id="node-job-data" x="2700.0" y="680" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="711.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Job PostgreSQL</text>
+    <text x="2875.0" y="742.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Content + revisions</text>
+    <rect id="node-hiring" x="1180.0" y="910" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="942.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="600">Hiring</text>
+    <text x="1340.0" y="971.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="400">Kafka publisher: Hiring facts</text>
+    <rect id="node-hiring-data" x="2700.0" y="910" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="941.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Hiring PostgreSQL</text>
+    <text x="2875.0" y="972.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Applications + capacity</text>
+    <rect id="node-notification" x="1180.0" y="1140" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="1172.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="600">Notification</text>
+    <text x="1340.0" y="1201.3" text-anchor="middle" font-size="20" fill="#27344c" font-weight="400">Kafka publisher: Delivery facts</text>
+    <rect id="node-notification-data" x="2700.0" y="1140" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="1171.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Notification PostgreSQL</text>
+    <text x="2875.0" y="1202.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Delivery requests + outcomes</text>
+    <rect id="node-analytics" x="1180.0" y="1370" width="320" height="80" rx="10" fill="#f0e8ff" stroke="#7950c8" stroke-width="2" />
+    <text x="1340.0" y="1418.5" text-anchor="middle" font-size="25" fill="#27344c" font-weight="600">Analytics</text>
+    <rect id="node-analytics-data" x="2700.0" y="1370" width="350" height="80" rx="10" fill="#e9f4ee" stroke="#4c8961" stroke-width="2" />
+    <text x="2875.0" y="1401.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Reporting storage · Open</text>
+    <text x="2875.0" y="1432.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Derived reports</text>
+    <rect id="node-candidate-queue" x="1740.0" y="560" width="320" height="75" rx="10" fill="#fff4dd" stroke="#b98029" stroke-width="2" />
+    <text x="1900.0" y="589.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">RabbitMQ</text>
+    <text x="1900.0" y="620.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Candidate task queue</text>
+    <rect id="node-candidate-worker" x="2210.0" y="560" width="340" height="75" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="2380.0" y="589.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Candidate Celery workers</text>
+    <text x="2380.0" y="620.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Parse resume</text>
+    <rect id="node-notification-queue" x="1740.0" y="1250" width="320" height="75" rx="10" fill="#fff4dd" stroke="#b98029" stroke-width="2" />
+    <text x="1900.0" y="1279.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">RabbitMQ</text>
+    <text x="1900.0" y="1310.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Notification task queue</text>
+    <rect id="node-notification-worker" x="2210.0" y="1250" width="340" height="75" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="2380.0" y="1279.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Notification Celery workers</text>
+    <text x="2380.0" y="1310.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Deliver message</text>
+    <rect id="node-temporal" x="1740.0" y="790" width="320" height="75" rx="10" fill="#fff4dd" stroke="#b98029" stroke-width="2" />
+    <text x="1900.0" y="819.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Temporal</text>
+    <text x="1900.0" y="850.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Publication task queues</text>
+    <rect id="node-publication-workers" x="2170.0" y="790" width="420" height="75" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="2380.0" y="819.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Workflow + activity workers</text>
+    <text x="2380.0" y="850.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Job: process · Hiring: adopt</text>
+    <rect id="node-scoring-temporal" x="1740.0" y="1020" width="320" height="75" rx="10" fill="#fff4dd" stroke="#b98029" stroke-width="2" />
+    <text x="1900.0" y="1049.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Temporal</text>
+    <text x="1900.0" y="1080.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Scoring task queues</text>
+    <rect id="node-scoring-workers" x="2170.0" y="1010" width="420" height="95" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="2380.0" y="1033.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Hiring workflow + activity workers</text>
+    <text x="2380.0" y="1064.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Wait for saved inputs</text>
+    <text x="2380.0" y="1095.98" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Compute and save score</text>
+    <rect id="node-kafka" x="1740.0" y="1480" width="320" height="75" rx="10" fill="#fff4dd" stroke="#b98029" stroke-width="2" />
+    <text x="1900.0" y="1509.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Kafka + Schema Registry</text>
+    <text x="1900.0" y="1540.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Recorded service facts</text>
+    <rect id="node-analytics-consumer" x="2210.0" y="1480" width="340" height="75" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="2380.0" y="1509.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Analytics consumers</text>
+    <text x="2380.0" y="1540.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Update reports</text>
+    <rect id="node-kafka-publishers" x="1180.0" y="1480" width="500" height="75" rx="10" fill="#e6f4fb" stroke="#3182a7" stroke-width="2" />
+    <text x="1430.0" y="1509.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="600">Kafka publishers</text>
+    <text x="1430.0" y="1540.48" text-anchor="middle" font-size="22" fill="#27344c" font-weight="400">Candidate · Job · Hiring · Notification</text>
+    <text x="45" y="60" font-size="36" fill="#302447" font-weight="700">SmartHire | High-Level Architecture</text>
+    <text x="45" y="104" font-size="23" fill="#526077" font-weight="400">PROPOSED · Solid purple: request / response · Blue: background work · Dashed grey: owned data</text>
+    <text x="45" y="130" font-size="21" fill="#526077" font-weight="400">RabbitMQ boxes share one logical broker. Temporal boxes share one Temporal Service.</text>
+    <text x="1180.0" y="163" font-size="27" fill="#302447" font-weight="700">Service APIs</text>
+    <text x="1740.0" y="163" font-size="27" fill="#302447" font-weight="700">Background execution</text>
+    <text x="2700.0" y="163" font-size="27" fill="#302447" font-weight="700">Service-owned storage</text>
+    <text x="1185.0" y="1108" font-size="20" fill="#526077" font-weight="400">Identity and Hiring: delivery requests</text>
+    <text x="2215.0" y="1352" font-size="20" fill="#526077" font-weight="400">Delivery worker → external provider (open)</text>
+    <text x="45" y="1637" font-size="22" fill="#526077" font-weight="400">APIs and workers share their service-owned data. Candidate owns resume files; Job owns description files. Physical storage layout is open.</text>
+    <text x="45" y="1678" font-size="22" fill="#526077" font-weight="400">Identity reporting uses reconciliation. Observability: OpenTelemetry, Jaeger, Prometheus, Grafana. Redis / NoSQL roles remain open.</text>
+    <g id="identity-request-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="219">Register / sign in / sign out</text>
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="248">Manage organization access</text>
+    </g>
+    <g id="candidate-request-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="470">Create profile / upload resume</text>
+    </g>
+    <g id="job-request-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="700">Search / view / post / update job</text>
+    </g>
+    <g id="hiring-request-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="901">Apply / track application</text>
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="930">Manage periods / hiring progress</text>
+    </g>
+    <g id="analytics-request-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="730" y="1390">View hiring reports</text>
+    </g>
+    <g id="candidate-hiring-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="1180" y="594">Submitted profile + resume</text>
+      <text font-size="21" fill="#654394" font-weight="400" x="1180" y="623">Saved parsing result</text>
+    </g>
+    <g id="job-hiring-label">
+      <text font-size="21" fill="#654394" font-weight="400" x="1180" y="823">Preserved job revision</text>
+      <text font-size="21" fill="#654394" font-weight="400" x="1180" y="852">Application acceptance status</text>
+    </g>
+  </g>
+</svg>

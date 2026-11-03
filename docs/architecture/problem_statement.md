@@ -1,166 +1,109 @@
-# SmartHire Problem Statement
+# SmartHire Requirements
 
-## Purpose
+**Purpose:** Define the business outcomes, operations and rules the system must support.
 
-Answers: **What must SmartHire do to solve its business problems?**
+## Problems and Goals
 
-## Business Problems
+Manual hiring, scattered records and unreliable background work slow recruitment. Hiring spikes increase delays, and limited search and reporting hide useful information.
+SmartHire must make recruitment easier to manage, keep records consistent and provide useful hiring reports.
 
-- Manual hiring work slows recruitment.
-- Limited search and insights make suitable candidates hard to find.
-- Scattered data and delayed updates produce inconsistent progress and reports.
-- Hiring spikes delay user requests and background processing.
-- Unreliable background work makes recovery difficult.
-- Hiring data provides too few useful insights.
+## Actors and Scope
 
-## Business Goals
-
-Reduce manual hiring work. Help candidates find suitable jobs. Keep hiring progress reliable. Give recruiters useful insights.
-
-## Actors and Organization Scope
-
-| Actor / Role | Responsibility |
+| Actor | Responsibility |
 | --- | --- |
-| Candidate | Maintain a personal profile, discover jobs, apply and track their applications. |
-| Recruiter | Manage jobs and hiring in organizations where they have access. |
-| Organization Owner | Manage organization access and perform authorized recruitment operations. |
+| Candidate | Maintain personal information, find jobs, apply and track applications. |
+| Recruiter | Manage jobs and hiring within permitted organizations. |
+| Organization owner | Manage organization access and perform recruitment operations. |
 
-An organization is a **tenant**. Keep its private recruitment data separate from other organizations. Shared identity and multiple tenants extend the assignment scope.
+An organization is a **tenant**. One account can have candidate access and owner or recruiter memberships in several organizations.
+A recruiter can apply elsewhere as a candidate. Their employer's membership must not expose those applications.
+Common identity and multi-tenancy are agreed additions to the assignment.
+Detailed interview scheduling, assessments, file formats and retention are outside this design discussion.
 
-One account can have candidate access and recruiter or owner memberships in several organizations. A recruiter can apply to another organization as a candidate.
+## Operations by Capability
 
-Their organization cannot see those applications through their recruiter membership. That membership does not grant access to the other organization's hiring data.
+These names describe user outcomes, not endpoints. Submission fields and automatic work are not separate user operations.
 
-## System Operations
-
-### Actor Requests
-
-| Actor | Operations |
-| --- | --- |
-| Candidate / Recruiter | `register_candidate`, `register_recruiter`, `login`, `logout` |
-| Prospective Organization Owner | `create_organization` |
-| Organization Member | `view_organization`, `select_organization`, `leave_organization` |
-| Organization Owner | `update_organization`, `list_memberships`, `update_membership`, `invite_recruiter`, `revoke_invitation`, `remove_recruiter`, `transfer_ownership` |
-| Invited Recruiter | `accept_invitation` |
-| Candidate | `create_candidate_profile`, `upload_resume`, `search_jobs`, `view_job`, `apply_to_job`, `track_application` |
-| Recruiter / Owner | `post_job`, `update_job`, `upload_job_description`, `define_required_skills`, `manage_hiring_stages`, `publish_job` |
-| Recruiter / Owner | `set_hiring_duration`, `set_application_limit`, `reopen_job` |
-| Recruiter / Owner | `move_application_stage`, `record_interview_progress`, `record_recruiter_notes`, `record_hiring_decision` |
-| Recruiter / Owner | `report_hiring_metrics` |
-| Candidate / Recruiter / Owner | `semantic_search` |
-| Recruiter / Owner | `recommend_candidates`, `summarize_resume`, `explain_candidate_ranking`, `enhance_job_description` |
-| Candidate | `answer_job_questions`, `assess_role_fit`, `provide_application_guidance` |
-
-### Automatic Processing
-
-| Trigger | Operations | Outcome |
+| Capability | Actor | Operations |
 | --- | --- | --- |
-| Job publishing or update | `extract_job_keywords`, `map_job_skills`, `structure_job_description`, `mark_job_ready` | Save structured content; mark ready only after required processing succeeds. |
-| Candidate application | `parse_resume`, `score_candidate`, `send_application_notification` | Process the resume, score the match and confirm application receipt. |
-| Organization invitation created | `send_invitation_notification` | Deliver the invitation to the intended recruiter. |
-| Hiring period ends or capacity is reached | `close_job` | Close admission to further applications. |
-| Hiring data changes | `update_analytics` | Update reports without losing or double-counting changes. |
-
-This design includes core recruitment, semantic search and AI assistance. The source delivery plan separates Part A and Part B. Both remain in design scope.
-
-## Business Capabilities
-
-A capability groups related work and data. A capability does not require a separate service.
-
-| Capability | Work | Data |
-| --- | --- | --- |
-| Identity & Authentication | Register accounts and control account access. | Accounts, credentials, candidate access and sessions. |
-| Organizations & Access | Manage organizations, members and invitations. | Organizations, memberships, roles and invitations. |
-| Candidate Profiles & Resumes | Create profiles and process resumes. | Profiles, skills, resumes and extracted information. |
-| Job Management & Publishing | Prepare, publish and find jobs. | Jobs, revisions, descriptions, requirements, skills, stage definitions and processing status. |
-| Applications & Hiring Progress | Accept applications and manage hiring. | Periods, limits, counts, acceptance status, submitted information, stages, history, notes, interview progress and decisions. |
-| Candidate Evaluation | Score candidate matches. | Scores and the job/candidate information used. |
-| Notifications | Deliver receipts and invitations. | Messages, recipients and delivery results. |
-| Hiring Reporting | Calculate and present hiring measures. | Counts, trends, conversion, hiring time, candidate activity and failures. |
-| Semantic Discovery | Find jobs or candidates by meaning. | Search data and relevance results. |
-| Recruitment Assistance | Answer questions and provide advice. | Questions, recommendations, summaries, explanations and usage counts. |
+| Account access | Candidate or recruiter | `register_account`, `login`, `logout` |
+| Organization creation | Prospective owner | `create_organization` |
+| Organization details | Member | `view_organization` |
+| Organization details | Owner | `update_organization` |
+| Membership and ownership | Owner | `list_memberships`, `update_membership`, `transfer_ownership`, `remove_recruiter` |
+| Membership departure | Member | `leave_organization` |
+| Invitations | Owner | `invite_recruiter`, `revoke_invitation` |
+| Invitations | Invited account | `accept_invitation` |
+| Candidate information | Candidate | `create_candidate_profile`, `upload_resume` |
+| Job discovery | Candidate | `search_jobs`, `view_job` |
+| Job content | Recruiter or owner | `post_job`, `update_job` |
+| Hiring periods | Recruiter or owner | `configure_hiring_period`, `reopen_job` |
+| Applications | Candidate | `apply_to_job`, `track_application` |
+| Hiring progress | Recruiter or owner | `move_application_stage`, `record_interview_progress`, `record_recruiter_notes`, `record_hiring_decision` |
+| Reporting | Recruiter or owner | `report_hiring_metrics` |
 
 ## Business Rules
 
-### Organization Access
+### Access and Privacy
 
-- Recruiter registration alone does not grant organization access. Accepting a valid invitation establishes membership.
-- Organization creation establishes the initial owner membership.
-- Revoke organization access immediately when a recruiter is removed. This includes signed-in recruiters.
-- Check current organization access before a scheduled recruiter action. If access was removed, defer the action. Do not advance the workflow.
-- An owner can transfer ownership to another member of the same organization.
-- The last owner must appoint another owner before leaving.
-- Organizations cannot be deleted for now.
+- Candidate registration enables personal candidate access. Recruiter registration alone grants no organization membership.
+- Creating an organization establishes its initial owner. Accepting a valid invitation establishes membership.
+- Selecting an organization grants no permission. Check current membership and resource permission for private recruitment records.
+- Removal revokes organization access immediately, including signed-in access. Scheduled recruiter actions must recheck access and defer without advancing if access was removed.
+- Owners may transfer ownership to an existing organization member. Role changes and departure must preserve at least one owner.
+- Leaving or removal preserves the account, candidate access, other memberships and hiring history. Organizations cannot be deleted.
+- Published jobs are public. Profiles, resumes, recruiter notes and hiring records are private. Candidates see only their own application status. Recruiters need organization and resource permission to read submitted information.
 
-### Job Revisions
+### Job Content and Resumes
 
-- Preserve each job revision and each application's submitted revision.
-- During an update, keep the previous published revision available while the job accepts applications.
-- Use the new revision for new applications when that revision is ready.
-- Mark a revision ready only after all required processing succeeds.
+- A job submission includes title, description, required skills and hiring stages. Accept form entry or an uploaded description.
+- An uploaded description produces editable details. The recruiter reviews and completes them before submission; uploading alone does not publish.
+- Submission automatically starts keyword extraction, skill mapping and content structuring. Processing must not silently replace confirmed requirements or stages.
+- Preserve job revisions. Keep the previous published revision available during an update. Use the new revision for subsequent applications once ready.
+- Required processing must succeed before readiness. No additional publish action is required.
+- Resume upload automatically starts parsing. Save the result against that resume; scoring consumes it without starting another parse.
 
 ### Applications and Capacity
 
-- Check candidate access, acceptance status, hiring period, capacity and duplicates before accepting an application.
-- Do not apply job-specific eligibility restrictions. Score candidates after acceptance.
-- Allow one application per candidate per job revision. Reopening does not permit another application to the same revision.
-- Applications cannot be withdrawn.
-- Each job has hiring periods and application limits. Keep these separate from content revisions.
-- Close acceptance when the period ends or the count reaches the limit. Concurrent submissions must not exceed the limit.
-- During an active period, use the changed limit and current count to determine acceptance.
-- Limit changes and revision updates do not reset the count or remove applications.
-- Reopening starts a new hiring period with a zero count. Preserve earlier applications and their revision links.
+- Accept only with candidate access, a ready adopted revision, an active hiring period and available capacity. Do not impose job-specific eligibility filters.
+- Allow one application per candidate per job revision, including after reopening. Applications cannot be withdrawn.
+- Preserve the submitted job revision, resume information and stage definitions. Later source changes must not alter earlier applications.
+- Each hiring period has a duration, limit and accepted count. Close acceptance at the limit or period end; concurrent submissions must not exceed capacity.
+- During an active period, limit changes use the existing count. Neither limit changes nor content revisions reset capacity or remove applications.
+- Reopening starts a new period with zero count and preserves earlier applications. Extending an ended period must not bypass reopening.
+- Acceptance initializes hiring history and records background scoring, receipt delivery and reporting work. It does not wait for parsing or scoring.
+- Basic or simulated scoring uses the submitted information. Scores do not decide eligibility or final hiring outcomes.
 
 ### Hiring Progress
 
-- Authorized recruiters and owners can skip stages or move backward.
-- Record the previous stage, new stage, actor and time for each change.
-- Final decisions cannot be corrected for now. Stage changes cannot reopen or change a final decision.
+- Authorized recruiters and owners may skip stages or move backward. Record the previous stage, new stage, actor and time.
+- Final decisions cannot be corrected. Stage changes cannot reopen or change a final decision.
 
-## Non-Functional Requirements
+## Reliability and Scale
 
-- Handle hiring spikes. Control incoming work when demand exceeds available capacity.
-- Support tens of thousands of concurrent applications and interview events.
-- Scale background work separately. Long tasks must not block user operations.
-- Support streaming or other non-blocking AI responses.
-- Handle concurrent requests, retries and partial failures without duplicate effects or lost history.
-- Prevent overload in one capability or tenant from exhausting resources needed by others.
-- Provide logs, metrics and traces. Make failures visible for recovery.
-- Check organization and personal-data permissions in requests, workers, reports and AI retrieval.
+- Keep business records durable, queryable and consistent, including application history.
+- Handle tens of thousands of concurrent applications and interview events. Control incoming work when capacity is exhausted.
+- Scale background processing separately. Overload in one capability or tenant must not exhaust resources needed by others.
+- Handle retries and partial failures without duplicate effects or lost work. Make failures visible through logs, metrics and traces.
+- Apply access rules to APIs, workers and reports.
 
-Capacity remains a target to test. Numerical response-time, availability and recovery targets remain unspecified.
+These are design targets, not measured results. Numerical latency, availability and recovery objectives remain unspecified.
 
-## Data and Reporting
+## Required Reports
 
-### Data
+Reports use the permitted organization or platform scope:
 
-- Keep business records durable and queryable.
-- Keep personal profiles separate from organization hiring records.
-- Candidates can see their own application status. Recruiters can see submitted information only with organization access and resource permission.
-- Make published jobs discoverable across organizations. Keep resumes and private hiring records out of public search.
-- Apply the same access rules to reports and AI results.
-- Keep application state and history consistent. Update reports without lost or duplicate changes.
-
-### Reports
-
-Report these measures for the permitted organization or platform scope:
-
-- Active candidates with profiles.
-- Recruiters who manage postings.
-- Active job postings.
+- Count of active candidates who have profiles.
+- Counts of recruiters managing postings and active job postings.
 - New applications by day, week and month.
 - Application-to-interview conversion.
 - Average time from application to final decision.
 - Most-applied jobs and average applications per candidate.
 - Failed workflows and system errors.
-- AI assistant usage.
 
-Dashboards must auto-refresh every 30 minutes.
-
-## Sources and Next Document
+Dashboards auto-refresh every 30 minutes. This does not define a maximum delay in source-data updates.
 
 Sources: [Overall requirements](../concept/SmartHire%20%E2%80%94%20Intelligent%20Workforce%20Orchestration%20%26%20Recruitment%20Platform.md) and [Part A](../concept/SmartHire%20-%20Part%20A.md).
+The access, revision, capacity and submission-review rules include agreed product choices.
 
-This document includes agreed product choices. These choices exclude job-specific eligibility restrictions from the source requirements.
-
-Next: [ADR 0001 — Architecture Style](../adrs/0001-architecture-style.md).
+Next: [Architecture style](../adrs/0001-architecture-style.md).
